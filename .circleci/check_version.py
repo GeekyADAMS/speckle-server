@@ -16,9 +16,7 @@ class Version:
     def pre_release_priority(self) -> int:
         if self.pre_release_tag == "alpha":
             return 1
-        if self.pre_release_tag == "beta":
-            return 2
-        return 10
+        return 2 if self.pre_release_tag == "beta" else 10
 
     @staticmethod
     def parse_version_slug(version_slug: str) -> "Version":

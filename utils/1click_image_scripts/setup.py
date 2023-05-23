@@ -93,10 +93,7 @@ def read_email_settings(domain):
         smtp_user = input("SMTP Username: ").strip()
         smtp_pass = input("SMTP Password: ").strip()
 
-        if domain:
-            default_from_email = "no-reply@" + domain
-        else:
-            default_from_email = ""
+        default_from_email = f"no-reply@{domain}" if domain else ""
         email_from = input(f"Email address to send email as [{default_from_email}]: ")
         if not email_from.strip():
             email_from = default_from_email
@@ -128,11 +125,7 @@ def main():
     ### Read user input
     #########
     domain = read_domain(ip)
-    if domain:
-        canonical_url = f"https://{domain}"
-    else:
-        canonical_url = f"http://{ip}"
-
+    canonical_url = f"https://{domain}" if domain else f"http://{ip}"
     email = read_email_settings(domain)
 
     ###
@@ -174,9 +167,9 @@ def main():
     #########
     print("\nConfiguring local nginx...")
 
-    nginx_conf_str = "# This file is managed by SpeckleServer setup script.\n"
-    nginx_conf_str += (
-        "# Any modifications will be removed when the setup script is re-executed\n\n"
+    nginx_conf_str = (
+        "# This file is managed by SpeckleServer setup script.\n"
+        + "# Any modifications will be removed when the setup script is re-executed\n\n"
     )
     with open(os.path.join(FILE_PATH, "template-nginx-site.conf"), "r") as f:
         nginx_conf_str += f.read()
@@ -203,7 +196,7 @@ def main():
         subprocess.run(["certbot", "--nginx", "-d", domain])
 
     print("\nConfiguration complete!")
-    print("You can access your speckle server at: " + canonical_url)
+    print(f"You can access your speckle server at: {canonical_url}")
     print(LOGO_STR)
     print("\nOne more thing and you are ready to roll:")
     print(

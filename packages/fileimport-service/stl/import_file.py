@@ -53,15 +53,13 @@ def import_stl():
         use_default_cache=False,
     )
 
-    commit_id = client.commit.create(
+    return client.commit.create(
         stream_id=stream_id,
         object_id=id,
         branch_name=(branch_name or DEFAULT_BRANCH),
         message=(commit_message or "STL file upload"),
         source_application="STL",
     )
-
-    return commit_id
 
 
 if __name__ == "__main__":
