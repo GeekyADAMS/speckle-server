@@ -10,11 +10,7 @@ from specklepy.api.client import SpeckleClient
 from specklepy.api.models import ServerInfo
 
 
-# Setting the SPECKLE_SERVER to test on
-SPECKLE_SERVER = ""
-
-if len(sys.argv) > 1:
-    SPECKLE_SERVER = sys.argv[1]
+SPECKLE_SERVER = sys.argv[1] if len(sys.argv) > 1 else ""
 if not SPECKLE_SERVER:
     SPECKLE_SERVER = os.getenv("SPECKLE_SERVER", "")
 if not SPECKLE_SERVER:
@@ -26,7 +22,7 @@ if not SPECKLE_SERVER:
 if not SPECKLE_SERVER.startswith("http://") and not SPECKLE_SERVER.startswith(
     "https://"
 ):
-    SPECKLE_SERVER = "http://" + SPECKLE_SERVER
+    SPECKLE_SERVER = f"http://{SPECKLE_SERVER}"
 
 print(f"Using Speckle server '{SPECKLE_SERVER}'")
 
@@ -45,14 +41,11 @@ server_info = client.server.get()
 assert isinstance(server_info, ServerInfo), "GraphQL ServerInfo query error"
 print(f"GraphQL operation succeeded. Server name: {server_info.name}")
 
-# Test that the deployed server version matches the expected version
-SERVER_VERSION = ""
-if len(sys.argv) > 2:
-    SERVER_VERSION = sys.argv[2]
+SERVER_VERSION = sys.argv[2] if len(sys.argv) > 2 else ""
 if not SERVER_VERSION:
     SERVER_VERSION = os.getenv("SERVER_VERSION")
 if SERVER_VERSION:
-    if not SERVER_VERSION == "latest":
+    if SERVER_VERSION != "latest":
         assert server_info.version.startswith(
             SERVER_VERSION
         ), f"The deployed version {server_info.version} should match, or be prefixed by, the expected {SERVER_VERSION}"

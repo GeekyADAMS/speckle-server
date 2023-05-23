@@ -72,10 +72,9 @@ class MtlFileCollection(object):
                 elif parts[0] == "Ke":
                     if self.ensure_mat("Ke"):
                         self.crt_mat["emissive"] = [float(x) for x in parts[1:]]
-                else:
-                    if parts[0] not in self.logged_unsupported:
-                        LOG.warn("Unsupported MTL directive: %s", parts[0])
-                        self.logged_unsupported.add(parts[0])
+                elif parts[0] not in self.logged_unsupported:
+                    LOG.warn("Unsupported MTL directive: %s", parts[0])
+                    self.logged_unsupported.add(parts[0])
         self.crt_mat = None
 
     def get_material(self, name):

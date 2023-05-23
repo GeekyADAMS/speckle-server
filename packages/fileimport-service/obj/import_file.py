@@ -92,17 +92,11 @@ def import_obj():
                     speckle_faces.append(len(obj_face))
                 speckle_faces.extend(obj_face)
 
-            has_vertex_colors = False
-            for vc in obj_mesh["vertex_colors"]:
-                if vc is not None:
-                    has_vertex_colors = True
+            has_vertex_colors = any(vc is not None for vc in obj_mesh["vertex_colors"])
             colors = []
             if has_vertex_colors:
                 for vc in obj_mesh["vertex_colors"]:
-                    if vc is None:
-                        r, g, b = (1.0, 1.0, 1.0)
-                    else:
-                        r, g, b = vc
+                    r, g, b = (1.0, 1.0, 1.0) if vc is None else vc
                     argb = (1.0, r, g, b)
                     color = int.from_bytes(
                         [int(val * 255) for val in argb], byteorder="big", signed=True
@@ -116,8 +110,7 @@ def import_obj():
                 textureCoordinates=[],
             )
 
-            obj_material = obj_mesh["material"]
-            if obj_material:
+            if obj_material := obj_mesh["material"]:
                 speckle_mesh["renderMaterial"] = convert_material(obj_material)
 
             speckle_obj["@displayValue"].append(speckle_mesh)
@@ -141,7 +134,7 @@ def import_obj():
         base=speckle_root, transports=[transport], use_default_cache=False
     )
 
-    commit_id = client.commit.create(
+    return client.commit.create(
         stream_id=stream_id,
         object_id=id,
         branch_name=(branch_name or DEFAULT_BRANCH),
@@ -149,17 +142,15 @@ def import_obj():
         source_application="OBJ",
     )
 
-    return commit_id
-
 
 if __name__ == "__main__":
     from pathlib import Path
 
     try:
-        commit_id = import_obj()
-        if not commit_id:
+        if commit_id := import_obj():
+            results = {"success": True, "commitId": commit_id}
+        else:
             raise Exception("Can't create commit")
-        results = {"success": True, "commitId": commit_id}
     except Exception as ex:
         LOG.exception(ex)
         results = {"success": False, "error": str(ex)}

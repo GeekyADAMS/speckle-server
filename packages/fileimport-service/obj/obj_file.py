@@ -41,10 +41,9 @@ class ObjFile(object):
                     self.crt_mtl = " ".join(parts[1:])
                 elif parts[0] == "o":
                     self.crt_object = parts[1]
-                else:
-                    if parts[0] not in self.logged_unsupported:
-                        LOG.warn("Unsupported OBJ directive: " + parts[0])
-                        self.logged_unsupported.add(parts[0])
+                elif parts[0] not in self.logged_unsupported:
+                    LOG.warn(f"Unsupported OBJ directive: {parts[0]}")
+                    self.logged_unsupported.add(parts[0])
         self.post_process()
 
     def flatten_vertices(self):

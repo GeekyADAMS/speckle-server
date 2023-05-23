@@ -94,9 +94,9 @@ def tick(cur):
         if row[0] not in used_labels:
             used_labels[row[0]] = {}
         used_labels[row[0]][str(row[1])] = row[2]
-    for file_type in used_labels:
+    for file_type, value in used_labels.items():
         for status in range(4):
-            if str(status) in used_labels[file_type]:
+            if str(status) in value:
                 PROM["fileimports"].labels(file_type, str(status)).set(
                     used_labels[file_type][str(status)]
                 )
@@ -121,9 +121,7 @@ def tick(cur):
         GROUP BY status
         """
     )
-    values = {}
-    for row in cur:
-        values[str(row[0])] = row[1]
+    values = {str(row[0]): row[1] for row in cur}
     for status in range(4):
         if str(status) in values:
             PROM["webhooks"].labels(str(status)).set(values[str(status)])
@@ -138,9 +136,7 @@ def tick(cur):
         GROUP BY "previewStatus"
         """
     )
-    values = {}
-    for row in cur:
-        values[str(row[0])] = row[1]
+    values = {str(row[0]): row[1] for row in cur}
     for status in range(4):
         if str(status) in values:
             PROM["previews"].labels(str(status)).set(values[str(status)])
